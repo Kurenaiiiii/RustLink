@@ -7,9 +7,11 @@ cd /mnt/server
 
 # Install native build dependencies required by RustLink.
 #   cmake, build-essential, pkg-config  → needed by opus-sys (bundled libopus C build)
-#   libopus-dev, libssl-dev              → optional, uncomment if you prefer system libs over bundled
+#   g++                                 → explicitly installs the C++ compiler + c++ symlink
+#   libopus-dev                         → provides system opus, skips the bundled CMake build entirely
+#   libssl-dev                          → only needed if you switch reqwest to default-tls (not recommended)
 apt update
-apt install -y cmake build-essential pkg-config
+apt install -y cmake build-essential pkg-config g++ libopus-dev
 
 # User Upload protection
 if [ "${USER_UPLOAD}" == "true" ] || [ "${USER_UPLOAD}" == "1" ]; then

@@ -1,249 +1,180 @@
 # =============================================================================
 # RustLink Configuration File (rustlink.toml)
-# =============================================================================
-# This is the main configuration file for RustLink (a Lavalink-compatible audio
-# server). Every field has a sensible default — you only need to set what you
-# want to override.
-#
-# Format: TOML (https://toml.io/en/v1.0.0)
-# Nested sections use dots, e.g. [server], [sources.youtube], [audio.fading]
-#
-# You can also override any setting via environment variables:
-#   RUSTLINK__SERVER__PORT=2334
-#   NODELINK__SOURCES__SPOTIFY__CLIENT_ID=xxx
-# =============================================================================
-
-
-# =============================================================================
-# [server] — HTTP/WS server settings
+# Converted from NodeLink config.js
 # =============================================================================
 [server]
-# Host address to bind to. "0.0.0.0" = all interfaces.
 host = "0.0.0.0"
-# Port for Lavalink clients to connect to (default: 2333).
-port = 2333
-# Password required by clients on connect (Lavalink protocol).
-password = "youshallnotpass"
-# Maximum allowed HTTP request body size in bytes (default: 10 MB).
+port = 25600
+password = "youdontevenknowmebitch"
 max_body_size = 10485760
 
 
 # =============================================================================
-# [logging] — Logging behaviour
+# [logging]
 # =============================================================================
 [logging]
-# Minimum log level: trace | debug | info | warn | error
 level = "info"
 
 [logging.file]
-# Whether to write logs to a file (in addition to stdout).
 enabled = false
-# Directory for log files.
 path = "logs"
-# Rotation strategy: "daily" | "hourly" | "never"
 rotation = "daily"
-# Delete log files older than this many days.
 ttl_days = 7
 
 [logging.debug]
-# Set any of these to true to enable verbose debug logging for specific subsystems.
-all       = false   # Enable ALL debug logging (overrides individual flags)
-request   = false   # Log all HTTP request/response details
-session   = false   # Log session lifecycle events
-player    = false   # Log player state transitions
-filters   = false   # Log filter application
-sources   = false   # Log source resolution attempts
-lyrics    = false   # Log lyric fetching
-youtube   = false   # Log YouTube-specific debug info
-"youtube-cipher" = false  # Log YouTube cipher signature solving
-sabr      = false   # Log SABR (Stream Audio Binary Response) protocol
-potoken   = false   # Log PO token generation
+all       = false
+request   = false
+session   = false
+player    = true
+filters   = false
+sources   = false
+lyrics    = false
+youtube   = false
+"youtube-cipher" = false
+sabr      = false
+potoken   = false
 
 
 # =============================================================================
-# [connection] — Voice connection health checks
+# [connection]
 # =============================================================================
 [connection]
-# Log every health check (can be noisy).
 log_all_checks = false
-# Interval (ms) between connection quality checks.
-# Default is u32::MAX (~24 days), effectively disabling periodic checks.
 interval = 2147483647
-# Timeout (ms) for each quality check request.
 timeout = 2000
 
 [connection.thresholds]
-# Connection quality thresholds (ms). Used to classify voice server latency.
-bad     = 1    # Penalty threshold for "bad" connections
-average = 5    # Penalty threshold for "average" connections
+bad     = 1
+average = 5
 
 
 # =============================================================================
-# [metrics] — Prometheus metrics endpoint
+# [metrics]
 # =============================================================================
 [metrics]
-# Enable the /metrics endpoint for Prometheus scraping.
-enabled = false
-# Basic-auth username for the /metrics endpoint.
+enabled = true
 username = "admin"
-# If not set, falls back to the main server password.
-password = null
-# Metrics collection interval in ms.
+password = ""
 interval = 5000
 
 
 # =============================================================================
-# [rate_limit] — HTTP rate limiting
+# [rate_limit]
 # =============================================================================
 [rate_limit]
-# Master switch for rate limiting.
-enabled = true
-# (Legacy) flat rate limit: max requests per window.
+enabled = false
 max_requests = 300
-# (Legacy) rate limit window in ms.
 window_ms = 60000
-# Paths to exclude from ALL rate limiting (e.g. ["/metrics", "/health"]).
 ignore_paths = []
 
 [rate_limit.global]
-# Global rate limit across all clients.
 max_requests = 1000
 time_window_ms = 60000
 
 [rate_limit.perIp]
-# Per-IP address rate limit.
 max_requests = 100
 time_window_ms = 10000
 
 [rate_limit.perUserId]
-# Per-Lavalink-user-id rate limit.
 max_requests = 50
 time_window_ms = 5000
 
 [rate_limit.perGuildId]
-# Per-discord-guild rate limit.
 max_requests = 20
 time_window_ms = 5000
 
 [rate_limit.ignore]
-# Entities to completely exclude from rate limiting.
 user_ids = []
 guild_ids = []
 ips = []
 
 
 # =============================================================================
-# [dos_protection] — Basic DoS / abuse protection
+# [dos_protection]
 # =============================================================================
 [dos_protection]
-# Master switch for DoS protection.
-enabled = true
-# Maximum request body size in bytes.
+enabled = false
 max_body_size = 10485760
-# Maximum requests per second before mitigation kicks in.
 max_requests_per_second = 50
-# Delay (ms) to add to responses when throttling (legacy).
 delay_ms = 0
 
 [dos_protection.thresholds]
-# Burst detection: how many requests in the time window triggers mitigation.
 burst_requests = 50
 time_window_ms = 10000
 
 [dos_protection.mitigation]
-# What happens when thresholds are exceeded.
-delay_ms = 500              # Extra delay added to each request
-block_duration_ms = 300000  # How long to block the offender (5 min)
+delay_ms = 500
+block_duration_ms = 300000
 
 [dos_protection.ignore]
-# Entities exempt from DoS protection.
 user_ids = []
 guild_ids = []
 ips = []
 
 
 # =============================================================================
-# [audio] — Audio playback settings
+# [audio]
 # =============================================================================
 [audio]
-# Opus encoding quality: "low" | "medium" | "high" | "best"
 quality = "high"
-# Encryption mode: "aead_aes256_gcm_rtpsize" (standard Lavalink)
 encryption = "aead_aes256_gcm_rtpsize"
-# Resampling quality: "fast" | "medium" | "best"
 resampling_quality = "best"
-# Enable loudness normalization (EBU R128 / loudnorm filter).
 loudness_normalizer = true
-# Lookahead (ms) for loudness normalization.
 lookahead_ms = 200
-# Gate threshold (LUFS) — silence below this level is ignored.
 gate_threshold_lufs = -60.0
 
-# === Audio Fading (gradual volume transitions) ===
 [audio.fading]
-# Master switch for all fading effects.
 enabled = false
 
 [audio.fading.track_start]
-# Fade in when a track starts.
-duration = 0    # ms (0 = instant)
-curve = "linear"  # "linear" | "sinusoidal" | "logarithmic" | "cubic"
-type = "volume"   # "volume" | "crossfade"
+duration = 0
+curve = "linear"
+type = "volume"
 
 [audio.fading.track_end]
-# Fade out when a track ends naturally.
 duration = 0
 curve = "linear"
 type = "volume"
 
 [audio.fading.track_stop]
-# Fade out when a track is manually stopped.
 duration = 0
 curve = "linear"
 type = "volume"
 
 [audio.fading.seek]
-# Fade on seek.
 duration = 0
 curve = "linear"
 type = "volume"
 
 [audio.fading.pause]
-# Fade on pause.
 duration = 0
 curve = "sinusoidal"
 type = "tape"
 
 [audio.fading.resume]
-# Fade on resume.
 duration = 0
 curve = "sinusoidal"
 type = "tape"
 
 [audio.fading.ducking]
-# Automatically duck (reduce) volume during voice activity.
 enabled = false
-duration = 0         # ms to fade duck in/out
-target_volume = 0.3  # 0.0 (mute) to 1.0 (full)
+duration = 0
+target_volume = 0.3
 curve = "linear"
 
-# === Audio Crossfade ===
 [audio.crossfade]
-# Smooth transition between tracks.
 enabled = true
-duration = 2000      # ms
+duration = 2000
 curve = "sinusoidal"
-mode = "preload"     # "preload" | "normal"
-min_buffer_ms = 300  # Minimum buffer before crossfade starts
-buffer_ms = 500      # Buffer window for crossfade
+mode = "preload"
+min_buffer_ms = 300
+buffer_ms = 500
 
 
 # =============================================================================
-# [filters] — Which audio filters are available
+# [filters]
 # =============================================================================
 [filters]
-# Each entry toggles whether the filter can be used by clients.
-# All default to true (enabled).
 
 [filters.enabled]
 tremolo      = true
@@ -263,32 +194,25 @@ timescale    = true
 
 
 # =============================================================================
-# [sponsorblock] — SponsorBlock integration (skip segments in YouTube tracks)
+# [sponsorblock]
 # =============================================================================
 [sponsorblock]
-# Enable SponsorBlock segment skipping.
 enabled = true
-# SponsorBlock API endpoint.
 api = "https://sponsor.ajay.app"
-# Categories of segments to skip.
 categories = [
     "sponsor", "selfpromo", "interaction", "intro",
     "outro", "preview", "music_offtopic", "filler",
 ]
-# Action types to apply ("skip" | "mute" | "full" | "poi").
 action_types = ["skip"]
-# Margin (ms) before and after segments to add to the skip.
 skip_margin_ms = 150
 
 
 # =============================================================================
-# [lyrics] — Lyrics providers
+# [lyrics]
 # =============================================================================
 [lyrics]
-# Fallback source used when the primary source has no lyrics.
 fallback_source = "genius"
 
-# Per-source toggle. Each is: enabled = true/false
 [lyrics.youtube]
 enabled = true
 [lyrics.genius]
@@ -310,7 +234,7 @@ enabled = true
 
 
 # =============================================================================
-# [meanings] — Song meaning / explanation sources
+# [meanings]
 # =============================================================================
 [meanings.letrasmus]
 enabled = true
@@ -319,99 +243,66 @@ enabled = true
 
 
 # =============================================================================
-# [plugins] — Plugin system
+# [plugins]
 # =============================================================================
 [plugins]
-# Enable plugin loading.
 enabled = false
-# Directories to scan for plugin files.
 paths = []
-
-# Each entry in definitions describes a plugin to load.
-#   [[plugins.definitions]]
-#   name = "my-plugin"
-#   source = "https://example.com/plugin.zip"
-#   path = "./plugins/my-plugin"
-#   package = "my-plugin"
-#   [plugins.definitions.config]
-#   option = "value"
 definitions = []
 
 
 # =============================================================================
-# [voiceReceive] — Voice receive (forwarding audio from Discord to your app)
+# [voiceReceive]
 # =============================================================================
 [voiceReceive]
-# Enable receiving raw audio from voice channels.
-enabled = false
-# Output format: "opus" (native) or "pcm_s16le" (decoded WAV).
-format = "opus"
+enabled = true
+format = "pcm_s16le"
 
 
 # =============================================================================
-# [routePlanner] — IP rotation strategy for rate-limited sources
+# [routePlanner]
 # =============================================================================
 [routePlanner]
-# Strategy: "RotateOnBan" | "LoadBalance" | "NanoIp" | "RotatingNanoIp"
 strategy = "RotateOnBan"
-# Cooldown (ms) before a banned IP can be retried.
 bannedIpCooldown = 600000
-# Static list of IP blocks (CIDR notation) for the planner.
 ipBlocks = []
 
 
 # =============================================================================
-# [mix] — Multi-source audio mixing
+# [mix]
 # =============================================================================
 [mix]
-# Enable mixing multiple audio sources into one stream.
 enabled = true
-# Default volume for mixed layers (0.0 to 1.0).
 defaultVolume = 0.8
-# Maximum number of concurrent mix layers.
-maxLayersMix = 5
-# Automatically clean up finished mix layers.
+maxLayersMix = 15
 autoCleanup = true
 
 
 # =============================================================================
-# [cluster] — Multi-worker / multi-node clustering
+# [cluster]
 # =============================================================================
 [cluster]
-# Enable clustering (multi-process or multi-node).
-enabled = false
-# Number of worker processes (0 = auto-detect CPU count).
+enabled = true
 workers = 0
-# Minimum number of workers to keep alive.
-min_workers = 1
-# Command timeout (ms) for normal operations.
+min_workers = 2
 command_timeout = 15000
-# Command timeout (ms) for fast operations (e.g. search).
 fast_command_timeout = 4000
-# Max retries for failed worker commands.
 max_retries = 3
-# Worker mode: "in-process" | "multi-process"
 process_mode = "in-process"
 
-# === Specialized Source Workers ===
 [cluster.specialized_source_worker]
-# Route heavy source tasks (e.g. YouTube) to dedicated workers.
-enabled = false
-count = 1
-micro_workers = 2
+enabled = true
+count = 2
+micro_workers = 4
 tasks_per_worker = 100
 silent_logs = true
 
-# === Hibernation ===
 [cluster.hibernation]
-# Hibernate idle workers after timeout to save resources.
 enabled = true
-timeoutMs = 1200000  # 20 min
+timeoutMs = 1200000
 
-# === Auto-scaling ===
 [cluster.scaling]
-# Dynamically adjust worker count based on load.
-maxPlayersPerWorker = 20
+maxPlayersPerWorker = 50
 targetUtilization = 0.7
 scaleUpThreshold = 0.75
 scaleDownThreshold = 0.3
@@ -421,154 +312,96 @@ queueLengthScaleUpFactor = 5
 lagPenaltyLimit = 60
 cpuPenaltyLimit = 0.85
 
-# === Redis (multi-node clustering) ===
-[cluster]
-# Redis connection URL (required for multi-node clustering).
-redis_url = null
-# Unique node identifier for this instance.
-node_id = null
-# Heartbeat interval in seconds (for cluster health).
-heartbeat_interval_secs = 10
-# Timeout in seconds before a node is considered dead.
-node_timeout_secs = 30
-
-# === Cluster Endpoint Override ===
 [cluster.endpoint]
-# Code for the custom endpoint handler.
-code = ""
-# Allow patching the endpoint dynamically.
-patch_enabled = false
-# Allow external sources to patch the endpoint.
+patch_enabled = true
 allow_external_patch = false
+code = "CAPYBARA"
 
 
 # =============================================================================
-# [sources] — Music source providers
+# [sources]
 # =============================================================================
-# Each source has `enabled = true/false`. Sources with extra config options
-# are documented below. Simple on/off sources are listed at the bottom.
-
-# --- HTTP (raw URL streams) ---
 [sources.http]
 enabled = true
 
-# --- Local filesystem ---
 [sources.local]
 enabled = true
 base_path = "./local-music"
 
-# --- Google TTS ---
-[sources.google-tts]
+[sources."google-tts"]
 enabled = true
 language = "en-US"
 
-# --- YouTube ---
 [sources.youtube]
 enabled = true
-# Allowed itag codes (audio formats). 251 = opus 160k, 140 = m4a 128k.
 allow_itag = [251, 140]
-# Force a specific itag (null = let the server decide).
 target_itag = null
-# Attempt OAuth-based token refresh for restricted videos.
 get_oauth_token = false
-# OAuth refresh tokens (list of base64-encoded tokens).
 refresh_tokens = []
-# PO token for bot mitigation (generated via po-token-generator).
 potoken = null
-# PO token generation endpoint.
 po_token_endpoint = null
-# YouTube UI language (affects search results).
 hl = "en"
-# YouTube content region.
 gl = "US"
-# Sources to try when YouTube fails.
 fallback_sources = [
-    "soundcloud", "deezer", "jiosaavn", "qobuz",
-    "bandcamp", "audius", "mixcloud",
+    "soundcloud", "deezer", "jiosaavn", "qobuz", "gaana",
+    "vkmusic", "yandexmusic", "audiomack", "bandcamp",
+    "audius", "mixcloud", "bilibili", "bluesky", "nicovideo",
 ]
-# HTTP proxies for YouTube requests (rotated on failure).
 proxies = []
 
 [sources.youtube.clients]
-# Which YouTube client to use for each operation type.
 search    = ["Android"]
 playback  = ["AndroidVR", "TV", "TVCast", "WebEmbedded", "WebParentTools", "Web", "IOS"]
 resolve   = ["AndroidVR", "TV", "TVCast", "WebEmbedded", "WebParentTools", "IOS", "Web"]
-# Per-client custom settings (e.g. OAuth tokens for TV client).
-settings = null
+
+[sources.youtube.clients.settings]
+TV = { refreshToken = [""] }
 
 [sources.youtube.cipher]
-# Cipher server URL for signature solving (YouTube n parameter).
 url = "https://cipher.kikkia.dev/api"
-# Optional bearer token for the cipher server.
 token = null
 
-# --- Spotify ---
 [sources.spotify]
 enabled = true
-# Spotify Developer API credentials (required for search/resolve).
-client_id = ""
-client_secret = ""
-# External OAuth URL for token exchange (leave empty for built-in).
-external_auth_url = ""
-# ISO 3166-1 alpha-2 country code for content availability.
+client_id = "e16cffd061d64c128aad7a67e066797a"
+client_secret = "4319f0e3804e4e53aad18503b76dbd31"
+external_auth_url = "http://get.1lucas1apk.fun/spotify/gettoken"
 market = "US"
-# Max tracks to load from a playlist (0 = unlimited).
 playlist_load_limit = 0
-# Max tracks to load from an album (0 = unlimited).
 album_load_limit = 0
-# Allow explicit content.
 allowExplicit = true
-# Allow local files from Spotify.
 allow_local_files = true
-# Spotify sp_dc cookie (for some authenticated operations).
 sp_dc = ""
-# Concurrency for loading playlist pages.
-playlistPageLoadConcurrency = 10
-# Concurrency for loading album pages.
-albumPageLoadConcurrency = 5
+playlistPageLoadConcurrency = 20
+albumPageLoadConcurrency = 20
 
-# --- SoundCloud ---
 [sources.soundcloud]
 enabled = true
 
-# --- Apple Music ---
 [sources.applemusic]
 enabled = true
-# Apple Music Media API token (JWT, required for search/resolve).
 mediaApiToken = "token_here"
-# Storefront region (ISO 3166-1 alpha-2).
 market = "US"
-# Max load limits.
 playlistLoadLimit = 0
 albumLoadLimit = 0
-# Concurrency for page loading.
-playlistPageLoadConcurrency = 5
-albumPageLoadConcurrency = 5
-# Allow explicit content.
+playlistPageLoadConcurrency = 20
+albumPageLoadConcurrency = 20
 allowExplicit = true
 
-# --- Deezer ---
 [sources.deezer]
 enabled = true
-# Deezer ARL cookie (required for high-quality streaming).
 arl = null
-# Deezer decryption key for 360 MP3 (leave null for default).
 decryptionKey = null
 
-# --- JioSaavn ---
 [sources.jiosaavn]
 enabled = true
 playlistLoadLimit = 50
 artistLoadLimit = 20
-# HTTP proxy for JioSaavn requests (region-locked).
 proxy.url = ""
 proxy.username = null
 proxy.password = null
-# API secret key for HMAC signing (leave null if not needed).
 secretKey = null
 
-# --- Yandex Music ---
 [sources.yandexmusic]
 enabled = true
 access_token = null
@@ -581,19 +414,15 @@ proxy.url = ""
 proxy.username = null
 proxy.password = null
 
-# --- Qobuz ---
 [sources.qobuz]
 enabled = true
-user_token = null
-# Quality format ID: "5" = 24-bit Hi-Res, "6" = 16-bit CD, "7" = MP3 320.
-formatId = "5"
+user_token = ""
+formatId = "27"
 allowExplicit = true
 
-# --- Bandcamp ---
 [sources.bandcamp]
 enabled = true
 
-# --- Audius ---
 [sources.audius]
 enabled = true
 appName = ""
@@ -602,60 +431,46 @@ apiSecret = ""
 playlistLoadLimit = 100
 albumLoadLimit = 100
 
-# --- AudioMack ---
 [sources.audiomack]
 enabled = true
 
-# --- Mixcloud ---
 [sources.mixcloud]
 enabled = true
 
-# --- Vimeo ---
 [sources.vimeo]
 enabled = true
 
-# --- Twitch ---
 [sources.twitch]
 enabled = true
 
-# --- Reddit ---
 [sources.reddit]
 enabled = true
 
-# --- Tumblr ---
 [sources.tumblr]
 enabled = true
 
-# --- Twitter / X ---
 [sources.twitter]
 enabled = true
 
-# --- Bilibili ---
 [sources.bilibili]
 enabled = true
-sessdata = null  # Bilibili session cookie for authenticated streams
+sessdata = null
 
-# --- NicoNico ---
 [sources.nicovideo]
 enabled = true
 
-# --- Telegram ---
 [sources.telegram]
 enabled = true
 
-# --- Google Drive ---
 [sources.googledrive]
 enabled = true
 
-# --- Instagram ---
 [sources.instagram]
 enabled = true
 
-# --- Amazon Music ---
 [sources.amazonmusic]
 enabled = true
 
-# --- Gaana ---
 [sources.gaana]
 enabled = true
 streamQuality = "high"
@@ -666,111 +481,99 @@ proxy.url = ""
 proxy.username = null
 proxy.password = null
 
-# --- Pandora ---
 [sources.pandora]
-enabled = true
+enabled = false
 csrf_token = null
-remote_token_url = null
+remote_token_url = "https://get.1lucas1apk.fun/pandora/gettoken"
 
-# --- VK Music ---
 [sources.vkmusic]
 enabled = true
-user_token = null
-user_cookie = null
+user_token = ""
+user_cookie = ""
 proxy.url = ""
 proxy.username = null
 proxy.password = null
 
-# --- EternalBox (Infinite Music Streaming) ---
 [sources.eternalbox]
 enabled = true
 base_url = "https://eternalboxmirror.xyz"
-search_results = 10
-enrichSpotify = true             # Enrich Spotify metadata with EB data
-includeAnalysis = true           # Include audio analysis data
-includeAnalysisSummary = true    # Include analysis summary
-eternalStream = true             # Enable eternal (infinite) streaming
-cacheMaxBytes = 20971520         # 20 MB analysis cache
-maxBranches = 4                  # Max branching in eternal mode
-maxBranchThreshold = 75          # Branch similarity threshold
-branchThresholdStart = 10        # Starting threshold
-branchThresholdStep = 5          # Step for threshold adjustment
-branchTargetDivisor = 6          # Divider for target branch count
-addLastEdge = true               # Always add last segment edge
-justBackwards = false            # Only consider backwards branches
-justLongBranches = false         # Only consider long segments
-removeSequentialBranches = true  # Remove sequential duplicates
-useFilteredSegments = true       # Use only filtered segments
-minRandomBranchChance = 0.18     # Minimum random branch probability
-maxRandomBranchChance = 0.5      # Maximum random branch probability
-randomBranchChanceDelta = 0.09   # Random chance adjustment
-timbreWeight = 1                 # Audio timbre similarity weight
-pitchWeight = 10                 # Pitch similarity weight
-loudStartWeight = 1              # Starting loudness weight
-loudMaxWeight = 1                # Max loudness weight
-durationWeight = 100             # Duration similarity weight
-confidenceWeight = 1             # Analysis confidence weight
-infiniteStream = true            # Enable infinite stream mode
-max_reconnects = 0               # Max reconnection attempts (0 = unlimited)
-reconnectDelayMs = 1000          # Delay between reconnection attempts
+search_results = 30
+enrichSpotify = true
+includeAnalysis = true
+includeAnalysisSummary = true
+eternalStream = true
+cacheMaxBytes = 20971520
+maxBranches = 4
+maxBranchThreshold = 75
+branchThresholdStart = 10
+branchThresholdStep = 5
+branchTargetDivisor = 6
+addLastEdge = true
+justBackwards = false
+justLongBranches = false
+removeSequentialBranches = true
+useFilteredSegments = true
+minRandomBranchChance = 0.18
+maxRandomBranchChance = 0.5
+randomBranchChanceDelta = 0.09
+timbreWeight = 1
+pitchWeight = 10
+loudStartWeight = 1
+loudMaxWeight = 1
+durationWeight = 100
+confidenceWeight = 1
+infiniteStream = true
+max_reconnects = 0
+reconnectDelayMs = 1000
 
-# --- Bluesky ---
 [sources.bluesky]
 enabled = true
 
-# --- Anghami ---
 [sources.anghami]
 enabled = false
-cookies = null  # Anghami session cookies
+cookies = null
 
-# --- RSS / Podcasts ---
 [sources.rss]
 enabled = true
 
-# --- Songlink / Odesli ---
 [sources.songlink]
 enabled = true
 apiKey = ""
 userCountry = "US"
-songIfSingle = true           # Return single track for single-result lookups
-useApi = true                 # Use Odesli API
-useScrapeFallback = true      # Fall back to scraping if API fails
-preferredPlatforms = ["spotify", "appleMusic", "youtubeMusic", "youtube",
-    "deezer", "tidal", "amazonMusic", "soundcloud", "bandcamp",
-    "audius", "audiomack", "pandora", "itunes", "amazonStore"]
-fallbackToAny = true          # Return any platform result if preferred unavailable
+songIfSingle = true
+useApi = true
+useScrapeFallback = true
+preferredPlatforms = [
+    "spotify", "appleMusic", "youtubeMusic", "youtube",
+    "deezer", "tidal", "amazonMusic", "soundcloud",
+    "bandcamp", "audius", "audiomack", "itunes", "amazonStore",
+]
+fallbackToAny = true
 
-# --- iHeartRadio ---
 [sources.iheartradio]
 enabled = true
 
-# --- Shazam ---
 [sources.shazam]
 enabled = true
 allowExplicit = true
 
-# --- Genius ---
 [sources.genius]
 enabled = true
 
-# --- Pinterest ---
 [sources.pinterest]
 enabled = true
 
-# --- Kwai ---
 [sources.kwai]
 enabled = true
 
-# --- Flowery TTS ---
 [sources.flowery]
 enabled = true
 voice = "Salli"
 translate = false
-silence = 0        # Padding silence in ms
-speed = 1.0        # Playback speed multiplier
+silence = 0
+speed = 1.0
 enforceConfig = false
 
-# --- LazyPy TTS ---
 [sources.lazypytts]
 enabled = true
 service = "Cerence"
@@ -778,40 +581,34 @@ voice = "Luciana"
 maxTextLength = 3000
 enforceConfig = false
 
-# --- Piper TTS ---
 [sources.pipertts]
 enabled = false
 url = "http://localhost:5000"
-voice = null        # Piper voice model name
-speaker = null      # Speaker ID (if multi-speaker model)
-lengthScale = null  # Speed: 1.0 = normal, 0.5 = faster, 1.5 = slower
-noiseScale = null   # Noise: 0.0 - 1.0 (higher = more variation)
-noiseWScale = null  # Noise width: 0.0 - 1.0
+voice = null
+speaker = null
+lengthScale = null
+noiseScale = null
+noiseWScale = null
 
-# --- Tidal ---
 [sources.tidal]
 enabled = true
 token = "token_here"
 countryCode = "US"
-playlistLoadLimit = 2
-playlistPageLoadConcurrency = 5
-hifiApis = [""]  # HiFi API endpoints
+playlistLoadLimit = 0
+playlistPageLoadConcurrency = 20
+hifiApis = [""]
 hifiQualities = ["HI_RES_LOSSLESS", "LOSSLESS", "HIGH", "LOW"]
 
-# --- Last.fm ---
 [sources.lastfm]
 enabled = true
 apiKey = ""
 
-# --- Netease ---
 [sources.netease]
 enabled = true
 
-# --- Letrasmus (lyrics) ---
 [sources.letrasmus]
 enabled = true
 
-# --- Monochrome (Korean music) ---
 [sources.monochrome]
 enabled = true
 instances = []
@@ -820,59 +617,25 @@ quality = "HI_RES_LOSSLESS"
 
 
 # =============================================================================
-# [pluginConfig] — Arbitrary plugin-specific configuration
-# =============================================================================
-# This is a free-form JSON object passed to plugins.
-# Example:
 # [pluginConfig]
-# "my-plugin" = { key = "value" }
-pluginConfig = null
+# =============================================================================
+pluginConfig = {}
 
 
 # =============================================================================
-# Global Settings (top-level fields)
+# Global Settings
 # =============================================================================
-# Default search source when no source is specified (first is primary).
 default_search_source = ["youtube", "soundcloud"]
-
-# Sources to include in unified search results.
 unified_search_sources = ["youtube", "soundcloud"]
-
-# Maximum number of search results to return (per source).
 max_search_results = 50
-
-# Maximum tracks to load from an album or playlist (global fallback).
 max_album_playlist_length = 500
-
-# Interval (ms) for sending player state updates to Lavalink clients.
 player_update_interval = 1000
-
-# Interval (ms) for collecting and exposing stats.
 stats_update_interval_ms = 15000
-
-# Threshold (ms) before a track is considered "stuck".
 track_stuck_threshold_ms = 10000
-
-# Timeout (ms) for dispatching events to clients.
 event_timeout_ms = 15000
-
-# Threshold (ms) before a player is considered a zombie and cleaned up.
 zombie_threshold_ms = 60000
-
-# Enable Holo Tracks (virtual/holographic track loading).
 enable_holo_tracks = true
-
-# Enable the /track/:id streaming endpoint.
 enable_track_stream_endpoint = true
-
-# Enable the /load/:id streaming endpoint.
 enable_load_stream_endpoint = true
-
-# Resolve external links (e.g. odesli, song.link) to their actual source.
 resolve_external_links = true
-
-# Fetch channel info (avatar, banner) for YouTube channels.
 fetch_channel_info = true
-
-# Optional encryption key for cached data (AES-256-GCM).
-cache_encryption_key = null

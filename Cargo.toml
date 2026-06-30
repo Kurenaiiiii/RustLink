@@ -3,6 +3,7 @@ name = "rustlink"
 version = "3.8.0"
 edition = "2021"
 license = "GPL-3.0-only"
+default-run = "rustlink"
 
 [dependencies]
 # Async runtime and Web Server

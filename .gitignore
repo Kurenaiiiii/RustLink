@@ -1,0 +1,10 @@
+/target/
+/.idea/
+/.vscode/
+*.pdb
+*.profraw
+*.profdata
+*.log
+
+# Local runtime config/secrets.
+/rustlink.local.*

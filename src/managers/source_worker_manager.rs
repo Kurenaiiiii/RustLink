@@ -13,7 +13,7 @@ use crate::config::{SpecializedSourceWorkerConfig, WorkerProcessMode};
 use crate::managers::lyrics_manager::LyricsManager;
 use crate::managers::meaning_manager::MeaningManager;
 use crate::managers::source_manager::SourceManager;
-use crate::workers::ipc::{IpcFrame, CommandFrameType, IpcHello, make_worker_socket_path};
+use crate::workers::ipc::{IpcFrame, CommandFrameType, make_worker_socket_path};
 use crate::workers::types::{SourceWorkerTask, WorkerResult};
 
 #[derive(Debug, Clone)]
@@ -290,9 +290,9 @@ impl SourceWorkerPool {
 
         self.workers.lock().await.insert(id.clone(), worker_info);
 
-        if let Some(mut socket_client) = client {
+        if let Some(socket_client) = client {
             // Create channel for task dispatch
-            let (task_tx, mut task_rx) = mpsc::channel::<SourceTaskEnvelope>(64);
+            let (task_tx, task_rx) = mpsc::channel::<SourceTaskEnvelope>(64);
 
             let worker_id = id.clone();
             let workers_ref = self.workers.clone();

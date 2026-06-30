@@ -5,7 +5,6 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use std::thread;
 
 use serde_json::{json, Value};
-use tokio::sync::broadcast;
 
 use crate::config::NodeLinkConfig;
 use crate::state::SharedState;
@@ -380,7 +379,7 @@ fn get_memory_usage() -> Value {
 }
 
 /// Returns master status.
-async fn master_status(payload: &ProfilerPayload) -> Value {
+async fn master_status(_payload: &ProfilerPayload) -> Value {
     let mut result = json!({
         "success": true,
         "pid": std::process::id(),
@@ -437,7 +436,7 @@ fn get_active_resources() -> Value {
 /// Returns master runtime context.
 pub fn get_master_runtime_context(state: &SharedState) -> Value {
     let config_code = state.config.cluster.endpoint.code.clone();
-    let code = if config_code.is_empty() { DEFAULT_CODE.to_string() } else { config_code };
+    let _code = if config_code.is_empty() { DEFAULT_CODE.to_string() } else { config_code };
 
     json!({
         "activeResources": get_active_resources(),

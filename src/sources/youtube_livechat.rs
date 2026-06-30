@@ -2,7 +2,7 @@ use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use tokio::time::{interval, Duration};
+use tokio::time::Duration;
 use tracing::{info, warn};
 
 use crate::sources::youtube_clients::ClientKind;
@@ -220,7 +220,7 @@ impl YouTubeLiveChat {
     }
 
     async fn fetch_next_data(&self, video_id: &str, context: &Option<Value>) -> (Value, u16) {
-        let client = ClientKind::Web;
+        let _client = ClientKind::Web;
         let payload = json!({
             "videoId": video_id,
             "context": context.as_ref().unwrap_or(&json!({})),

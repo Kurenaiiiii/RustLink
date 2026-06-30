@@ -1,4 +1,4 @@
-use crate::lyrics::{LyricsData, SyncedLyricLine, urlencoding};
+use crate::lyrics::LyricsData;
 
 pub async fn fetch_letrasmus(
     client: &reqwest::Client,

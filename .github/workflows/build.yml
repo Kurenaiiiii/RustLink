@@ -1,19 +1,19 @@
 name: Build Linux Binary
-
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+on: [workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - run: sudo apt update && sudo apt install -y cmake g++ libopus-dev pkg-config
-      - run: cargo build --release --jobs 1
-      - uses: actions/upload-artifact@v4
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install build deps
+        run: sudo apt-get update && sudo apt-get install -y cmake g++ libopus-dev pkg-config
+      - name: Build
+        run: cargo build --release --jobs 1
+      - name: Upload
+        uses: actions/upload-artifact@v4
         with:
           name: rustlink-linux
           path: target/release/rustlink

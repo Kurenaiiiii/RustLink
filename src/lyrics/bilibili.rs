@@ -1,4 +1,4 @@
-use crate::lyrics::{LyricsData, parse_lrc, urlencoding};
+use crate::lyrics::{LyricsData, urlencoding};
 
 pub async fn fetch_bilibili(
     client: &reqwest::Client,

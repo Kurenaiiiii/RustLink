@@ -485,7 +485,7 @@ impl WebmDemuxer {
     }
 
     fn parse_simple_block(&mut self, data: &[u8], pos: &mut usize, end: usize) {
-        if let Some((track_number, _)) = Self::read_varint(data, pos) {
+        if let Some((_track_number, _)) = Self::read_varint(data, pos) {
             if *pos + 3 > end {
                 return;
             }

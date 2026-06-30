@@ -1,10 +1,8 @@
 use crate::playback::hls::types::*;
-use crate::playback::hls::aes_decryptor::AESDecryptor;
 use crate::playback::hls::playlist_parser::parse_playlist;
 use crate::playback::hls::segment_fetcher::{SegmentFetcher, SegmentFetcherOptions, SegmentFetchResult};
-use anyhow::{anyhow, Context, Result};
-use bytes::Bytes;
-use futures::{stream, Stream, StreamExt};
+use anyhow::{anyhow, Result};
+use futures::StreamExt;
 use reqwest::Client;
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::future::Future;
@@ -13,7 +11,7 @@ use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
-use tracing::{debug, error, info, warn};
+use tracing::{debug, error, warn};
 
 const MAX_HISTORY: usize = 200;
 const MAX_GAP: i64 = 30;

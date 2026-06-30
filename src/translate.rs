@@ -1,4 +1,3 @@
-use std::collections::VecDeque;
 
 /// Translates text using Google Translate's free API (no key required).
 /// Supports auto-detection of source language.

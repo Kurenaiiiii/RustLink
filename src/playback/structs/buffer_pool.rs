@@ -167,7 +167,7 @@ impl BufferPoolInner {
             0.0
         };
 
-        let rejection_rate = if self.release_calls > 0 {
+        let _rejection_rate = if self.release_calls > 0 {
             self.rejected_releases as f64 / self.release_calls as f64
         } else {
             0.0

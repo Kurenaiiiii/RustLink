@@ -426,7 +426,7 @@ impl StreamAudioResource {
         rate
     }
 
-    pub fn set_scratch(&mut self, frequency: f32, amplitude: f32, position: f32) {
+    pub fn set_scratch(&mut self, _frequency: f32, _amplitude: f32, _position: f32) {
         self.scratch_transformer = Some(ScratchTransformer::new(500.0, self.channels));
     }
 

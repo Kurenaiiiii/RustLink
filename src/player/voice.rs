@@ -470,7 +470,7 @@ impl VoiceConnection {
         let conn_state = self.conn_state.clone();
         let ssrc_map = self.ssrc_map.clone();
         let ping_atomic = self.ping.clone();
-        let session_arc = self.session.clone();
+        let _session_arc = self.session.clone();
 
         let (session_tx, session_rx) = oneshot::channel::<VoiceSessionInfo>();
         let (shutdown_tx, mut shutdown_rx) = oneshot::channel::<()>();
@@ -692,7 +692,7 @@ impl VoiceConnection {
         session_tx: oneshot::Sender<VoiceSessionInfo>,
         preferred_mode: Option<EncryptionMode>,
         event_tx: broadcast::Sender<VoiceConnectionEvent>,
-        conn_state: Arc<Mutex<VoiceConnectionState>>,
+        _conn_state: Arc<Mutex<VoiceConnectionState>>,
         ssrc_map: Arc<Mutex<HashMap<u32, String>>>,
         ping_atomic: Arc<AtomicI64>,
         shutdown_rx: &mut oneshot::Receiver<()>,
@@ -764,7 +764,7 @@ impl VoiceConnection {
             }
 
             let mut session_info: Option<VoiceSessionInfo> = None;
-            let mut ready = false;
+            let ready = false;
 
             // Handshake loop
             loop {
@@ -775,7 +775,7 @@ impl VoiceConnection {
                         return;
                     }
                 };
-                let text = match msg {
+                let _text = match msg {
                     Some(Ok(Message::Text(t))) => t,
                     Some(Ok(Message::Close(c))) => {
                         warn!(target: "Voice", "WS closed during handshake: {c:?} (server: {})", server_id);

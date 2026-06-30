@@ -92,7 +92,7 @@ impl LyricsManager {
         source: &str,
         title: &str,
         artist: &str,
-        album: Option<&str>,
+        _album: Option<&str>,
     ) -> anyhow::Result<Option<LyricsResult>> {
         let lyrics = match source {
             "musixmatch" => musixmatch::fetch_musixmatch(&self.client, title, artist).await?,

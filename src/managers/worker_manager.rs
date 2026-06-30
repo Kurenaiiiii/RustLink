@@ -7,7 +7,7 @@ use tokio::sync::{mpsc, Mutex, oneshot};
 
 use crate::workers::ipc_transport;
 use tokio::time::interval;
-use tracing::{error, info, warn};
+use tracing::{info, warn};
 
 use crate::config::{ClusterConfig, WorkerProcessMode};
 use crate::workers::ipc::{
@@ -778,7 +778,7 @@ async fn read_one_frame<R: AsyncReadExt + Unpin>(
     worker_id: String,
     mut cmd_socket: ipc_transport::ServerStream,
     mut cmd_rx: mpsc::Receiver<WorkerCommandEnvelope>,
-    stats_tx: mpsc::UnboundedSender<WorkerTaskStats>,
+    _stats_tx: mpsc::UnboundedSender<WorkerTaskStats>,
     workers: Arc<Mutex<HashMap<String, WorkerInfo>>>,
     health_check_timeout: Duration,
 ) {

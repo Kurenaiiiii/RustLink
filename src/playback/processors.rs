@@ -403,7 +403,7 @@ impl FadeTransformer {
                     return false;
                 }
 
-                let step = delta_ms / self.duration_ms;
+                let _step = delta_ms / self.duration_ms;
                 for s in samples.iter_mut() {
                     let t = (self.elapsed_ms / self.duration_ms).clamp(0.0, 1.0);
                     let eased = self.curve.apply(t);

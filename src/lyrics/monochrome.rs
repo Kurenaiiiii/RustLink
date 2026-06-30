@@ -1,4 +1,4 @@
-use crate::lyrics::{LyricsData, SyncedLyricLine, parse_lrc, urlencoding};
+use crate::lyrics::{LyricsData, parse_lrc, urlencoding};
 
 pub async fn fetch_monochrome(
     client: &reqwest::Client,

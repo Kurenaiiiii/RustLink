@@ -1,8 +1,7 @@
 use crate::playback::hls::types::*;
-use anyhow::{anyhow, Context, Result};
+use anyhow::Result;
 use regex::Regex;
 use std::collections::HashMap;
-use std::str::FromStr;
 
 lazy_static::lazy_static! {
     static ref EXTINF_RE: Regex = Regex::new(r#"#EXTINF:([^,]+),?(.*)"#).unwrap();
@@ -43,7 +42,7 @@ pub fn parse_playlist(content: &str, base_url: &str) -> Result<HLSPlaylist> {
             continue;
         }
 
-        if let Some(caps) = EXT_X_VERSION_RE.captures(line) {
+        if let Some(_caps) = EXT_X_VERSION_RE.captures(line) {
             continue;
         }
 

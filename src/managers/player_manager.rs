@@ -93,7 +93,7 @@ impl PlayerManager {
         tokio::spawn(async move {
             let player_states: dashmap::DashMap<String, Arc<RwLock<crate::state::LivePlayerState>>> = dashmap::DashMap::new();
             let sponsorblock_map: dashmap::DashMap<String, Vec<String>> = dashmap::DashMap::new();
-            let mut worker = PlayerWorker::new(
+            let worker = PlayerWorker::new(
                 guild.clone(),
                 rx,
                 Some(ws_sender),

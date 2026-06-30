@@ -247,7 +247,7 @@ impl Player {
         let player_states: DashMap<String, Arc<RwLock<LivePlayerState>>> = DashMap::new();
         player_states.insert(guild_id.clone(), live_state.clone());
 
-        let mut player = Self {
+        let player = Self {
             guild_id: guild_id.clone(),
             session_id: options.session_id,
             user_id: options.user_id,

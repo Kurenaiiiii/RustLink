@@ -1,4 +1,4 @@
-use crate::lyrics::{LyricsData, SyncedLyricLine, urlencoding, parse_lrc};
+use crate::lyrics::{LyricsData, urlencoding, parse_lrc};
 
 pub async fn fetch_yandex(
     client: &reqwest::Client,

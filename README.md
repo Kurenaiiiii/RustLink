@@ -86,7 +86,7 @@
 Grab the latest binary from [Releases](../../releases) or build from source:
 
 ```bash
-git clone https://github.com/your-org/rustlink.git
+git clone https://github.com/Kurenaiiiii/RustLink.git
 cd rustlink
 cargo build --release
 ```

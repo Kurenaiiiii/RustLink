@@ -132,9 +132,9 @@ where
         let time = time_prefix();
 
         if target.is_empty() {
-            write!(writer, "[{time}] {ansi}[{lvl}] >{reset} {}", visitor.message)
+            writeln!(writer, "[{time}] {ansi}[{lvl}] >{reset} {}", visitor.message)
         } else {
-            write!(
+            writeln!(
                 writer,
                 "[{time}] {ansi}[{lvl}] >{reset}: {target} > {}",
                 visitor.message

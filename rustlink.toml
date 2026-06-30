@@ -4,7 +4,7 @@
 # =============================================================================
 [server]
 host = "0.0.0.0"
-port = 25600
+port = 8211
 password = "youdontevenknowmebitch"
 max_body_size = 10485760
 
@@ -282,7 +282,7 @@ autoCleanup = true
 # [cluster]
 # =============================================================================
 [cluster]
-enabled = true
+enabled = false
 workers = 0
 min_workers = 2
 command_timeout = 15000
@@ -335,11 +335,8 @@ language = "en-US"
 [sources.youtube]
 enabled = true
 allow_itag = [251, 140]
-target_itag = null
 get_oauth_token = false
 refresh_tokens = []
-potoken = null
-po_token_endpoint = null
 hl = "en"
 gl = "US"
 fallback_sources = [
@@ -359,7 +356,6 @@ TV = { refreshToken = [""] }
 
 [sources.youtube.cipher]
 url = "https://cipher.kikkia.dev/api"
-token = null
 
 [sources.spotify]
 enabled = true
@@ -390,29 +386,21 @@ allowExplicit = true
 
 [sources.deezer]
 enabled = true
-arl = null
-decryptionKey = null
 
 [sources.jiosaavn]
 enabled = true
 playlistLoadLimit = 50
 artistLoadLimit = 20
 proxy.url = ""
-proxy.username = null
-proxy.password = null
-secretKey = null
 
 [sources.yandexmusic]
 enabled = true
-access_token = null
 artist_load_limit = 1
 album_load_limit = 1
 playlist_load_limit = 1
 allow_unavailable = false
 allow_explicit = true
 proxy.url = ""
-proxy.username = null
-proxy.password = null
 
 [sources.qobuz]
 enabled = true
@@ -454,7 +442,6 @@ enabled = true
 
 [sources.bilibili]
 enabled = true
-sessdata = null
 
 [sources.nicovideo]
 enabled = true
@@ -478,12 +465,9 @@ playlistLoadLimit = 100
 albumLoadLimit = 100
 artistLoadLimit = 100
 proxy.url = ""
-proxy.username = null
-proxy.password = null
 
 [sources.pandora]
 enabled = false
-csrf_token = null
 remote_token_url = "https://get.1lucas1apk.fun/pandora/gettoken"
 
 [sources.vkmusic]
@@ -491,8 +475,6 @@ enabled = true
 user_token = ""
 user_cookie = ""
 proxy.url = ""
-proxy.username = null
-proxy.password = null
 
 [sources.eternalbox]
 enabled = true
@@ -531,7 +513,6 @@ enabled = true
 
 [sources.anghami]
 enabled = false
-cookies = null
 
 [sources.rss]
 enabled = true
@@ -584,11 +565,6 @@ enforceConfig = false
 [sources.pipertts]
 enabled = false
 url = "http://localhost:5000"
-voice = null
-speaker = null
-lengthScale = null
-noiseScale = null
-noiseWScale = null
 
 [sources.tidal]
 enabled = true

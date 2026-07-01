@@ -467,11 +467,6 @@ impl PlaybackWorker {
 
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::fmt()
-        .with_target(true)
-        .with_line_number(true)
-        .init();
-
     let args: Vec<String> = std::env::args().collect();
     let mut event_socket_path = String::new();
     let mut command_socket_path = String::new();
@@ -481,19 +476,19 @@ async fn main() {
     let mut i = 1;
     while i < args.len() {
         match args[i].as_str() {
-            "--event-socket" | "-e" => {
+            "--event" | "-e" => {
                 i += 1;
                 if i < args.len() {
                     event_socket_path = args[i].clone();
                 }
             }
-            "--command-socket" | "-c" => {
+            "--command" | "-c" => {
                 i += 1;
                 if i < args.len() {
                     command_socket_path = args[i].clone();
                 }
             }
-            "--worker-id" | "-w" => {
+            "--id" | "-i" => {
                 i += 1;
                 if i < args.len() {
                     worker_id = args[i].clone();
@@ -524,6 +519,18 @@ async fn main() {
     }
 
     let config = NodeLinkConfig::load_or_default(&config_path).unwrap_or_default();
+    let level = &config.logging.level;
+    tracing_subscriber::fmt()
+        .with_target(true)
+        .with_line_number(true)
+        .with_max_level(match *level {
+            "trace" => tracing::Level::TRACE,
+            "debug" => tracing::Level::DEBUG,
+            "warn" => tracing::Level::WARN,
+            "error" => tracing::Level::ERROR,
+            _ => tracing::Level::INFO,
+        })
+        .init();
 
     // Initialize sources
     let sources = SourceRegistry::default();

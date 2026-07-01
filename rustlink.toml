@@ -13,7 +13,7 @@ max_body_size = 10485760
 # [logging]
 # =============================================================================
 [logging]
-level = "info"
+level = "debug"
 
 [logging.file]
 enabled = false
@@ -22,17 +22,17 @@ rotation = "daily"
 ttl_days = 7
 
 [logging.debug]
-all       = false
-request   = false
-session   = false
+all       = true
+request   = true
+session   = true
 player    = true
-filters   = false
-sources   = false
-lyrics    = false
-youtube   = false
-"youtube-cipher" = false
-sabr      = false
-potoken   = false
+filters   = true
+sources   = true
+lyrics    = true
+youtube   = true
+"youtube-cipher" = true
+sabr      = true
+potoken   = true
 
 
 # =============================================================================

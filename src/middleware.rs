@@ -20,8 +20,29 @@ use tower_http::{
 use crate::config::NodeLinkConfig;
 use crate::state::SharedState;
 
+async fn request_logger(request: Request<Body>, next: Next) -> Response {
+    let method = request.method().to_string();
+    let path = request.uri().path().to_string();
+    let query = request.uri().query().map(|q| format!("?{}", q)).unwrap_or_default();
+    let user_agent = request
+        .headers()
+        .get("user-agent")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("unknown");
+    let remote = request
+        .headers()
+        .get("x-forwarded-for")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("unknown");
+    tracing::info!(target: "Request", "[{remote}] {method} - {path}{query} | {user_agent}");
+    next.run(request).await
+}
+
 pub fn apply_middleware(router: Router, config: &NodeLinkConfig, state: Option<SharedState>) -> Router {
     let mut router = router;
+
+    // Request logging
+    router = router.layer(axum::middleware::from_fn(request_logger));
 
     // Add NodeLink response headers
     let nodlink_api_version = HeaderValue::from_static("4");

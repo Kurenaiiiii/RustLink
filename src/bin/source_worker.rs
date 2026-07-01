@@ -280,11 +280,6 @@ impl SourceWorker {
 
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::fmt()
-        .with_target(true)
-        .with_line_number(true)
-        .init();
-
     let args: Vec<String> = std::env::args().collect();
     let mut source_socket_path = String::new();
     let mut worker_id = String::new();
@@ -293,13 +288,13 @@ async fn main() {
     let mut i = 1;
     while i < args.len() {
         match args[i].as_str() {
-            "--source-socket" | "-s" => {
+            "--socket" | "-s" => {
                 i += 1;
                 if i < args.len() {
                     source_socket_path = args[i].clone();
                 }
             }
-            "--worker-id" | "-w" => {
+            "--id" | "-i" => {
                 i += 1;
                 if i < args.len() {
                     worker_id = args[i].clone();
@@ -327,6 +322,18 @@ async fn main() {
     }
 
     let config = NodeLinkConfig::load_or_default(&config_path).unwrap_or_default();
+    let level = &config.logging.level;
+    tracing_subscriber::fmt()
+        .with_target(true)
+        .with_line_number(true)
+        .with_max_level(match *level {
+            "trace" => tracing::Level::TRACE,
+            "debug" => tracing::Level::DEBUG,
+            "warn" => tracing::Level::WARN,
+            "error" => tracing::Level::ERROR,
+            _ => tracing::Level::INFO,
+        })
+        .init();
 
     // Initialize sources
     let sources = SourceRegistry::default();

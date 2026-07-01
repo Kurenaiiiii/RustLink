@@ -6,11 +6,11 @@ use tracing::warn;
 
 #[tokio::main]
 async fn main() {
-    logging::init_logging();
-
     const VERSION: &str = "1.2.0";
 
     let config = config::NodeLinkConfig::load_or_default("rustlink.toml").unwrap_or_default();
+
+    logging::init_logging(&config.logging.level);
 
     for warning in config.validate() {
         warn!(target: "Config", "{}: {}", warning.path, warning.message);

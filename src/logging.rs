@@ -143,8 +143,25 @@ where
     }
 }
 
-pub fn init_logging() {
+pub fn init_logging(level: &str) {
+    let filter = tracing_subscriber::filter::Targets::new()
+        .with_targets(vec![
+            ("", match level {
+                "trace" => tracing::Level::TRACE,
+                "debug" => tracing::Level::DEBUG,
+                "warn" => tracing::Level::WARN,
+                "error" => tracing::Level::ERROR,
+                _ => tracing::Level::INFO,
+            }),
+        ]);
     let _ = tracing_subscriber::fmt()
         .event_format(NodeLinkFormatter)
+        .with_max_level(match level {
+            "trace" => tracing::Level::TRACE,
+            "debug" => tracing::Level::DEBUG,
+            "warn" => tracing::Level::WARN,
+            "error" => tracing::Level::ERROR,
+            _ => tracing::Level::INFO,
+        })
         .try_init();
 }

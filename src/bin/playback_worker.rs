@@ -523,7 +523,7 @@ async fn main() {
     tracing_subscriber::fmt()
         .with_target(true)
         .with_line_number(true)
-        .with_max_level(match *level {
+        .with_max_level(match level.as_str() {
             "trace" => tracing::Level::TRACE,
             "debug" => tracing::Level::DEBUG,
             "warn" => tracing::Level::WARN,

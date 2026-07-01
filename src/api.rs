@@ -819,11 +819,20 @@ async fn get_player(
 }
 
 #[derive(Debug, Deserialize)]
+struct VoicePayload {
+    token: String,
+    endpoint: String,
+    #[serde(rename = "sessionId")]
+    session_id: String,
+}
+
+#[derive(Debug, Deserialize)]
 struct PatchPlayerPayload {
     track: Option<Value>,
     volume: Option<u32>,
     paused: Option<bool>,
     filters: Option<Value>,
+    voice: Option<VoicePayload>,
 }
 
 async fn patch_player(
@@ -837,13 +846,35 @@ async fn patch_player(
         return response;
     }
 
+    let user_id = state
+        .sessions
+        .get(&session_id)
+        .map(|s| s.user_id.clone())
+        .unwrap_or_else(|| "0".into());
+
     let mut session = state.sessions.entry(session_id.clone()).or_insert(Session {
         id: session_id,
-        user_id: "0".into(),
+        user_id: user_id.clone(),
         resuming: false,
         timeout: 60,
         players: Vec::new(),
     });
+
+    // Handle voice update from REST
+    if let Some(ref voice) = payload.voice {
+        state.plugin_manager.on_voice_server_update(&guild_id, &voice.endpoint, &voice.token).await;
+        let workers = state.workers.read().await;
+        if let Some(tx) = workers.get(&guild_id) {
+            let _ = tx
+                .send(WorkerCommand::VoiceUpdate {
+                    session_id: voice.session_id.clone(),
+                    user_id: user_id.clone(),
+                    token: voice.token.clone(),
+                    endpoint: voice.endpoint.clone(),
+                })
+                .await;
+        }
+    }
 
     // Clone track before potential move into session
     let track_for_worker = payload.track.clone();

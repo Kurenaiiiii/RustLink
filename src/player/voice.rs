@@ -458,13 +458,7 @@ impl VoiceConnection {
         let token = self.token.clone();
         let user_id = self.user_id.clone();
         let preferred = self.preferred_mode;
-        let base_endpoint = self
-            .endpoint
-            .split(':')
-            .next()
-            .unwrap_or(&self.endpoint)
-            .to_string();
-        let ws_url = format!("wss://{}?v=4", base_endpoint);
+        let ws_url = format!("wss://{}?v=4", self.endpoint);
 
         let event_tx = self.event_tx.clone();
         let conn_state = self.conn_state.clone();

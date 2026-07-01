@@ -144,7 +144,7 @@ where
 }
 
 pub fn init_logging(level: &str) {
-    let filter = tracing_subscriber::filter::Targets::new()
+    let _filter = tracing_subscriber::filter::Targets::new()
         .with_targets(vec![
             ("", match level {
                 "trace" => tracing::Level::TRACE,

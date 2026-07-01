@@ -10,10 +10,12 @@ use axum::{
 };
 use serde::Deserialize;
 use serde_json::{json, Value};
+use tokio::sync::mpsc;
+use tracing::info;
 
 use crate::{
     constants::PATH_VERSION,
-    player::worker::WorkerCommand,
+    player::worker::{PlayerWorker, WorkerCommand},
     sources::{PlaylistData, PlaylistInfo, SourceResult},
     state::{Player, Session, SharedState},
     tracks::{decode_track, encode_track, TrackData, TrackInfo},
@@ -852,29 +854,36 @@ async fn patch_player(
         .map(|s| s.user_id.clone())
         .unwrap_or_else(|| "0".into());
 
-    let mut session = state.sessions.entry(session_id.clone()).or_insert(Session {
-        id: session_id,
+    let session_id_clone = session_id.clone();
+    let mut session = state.sessions.entry(session_id_clone.clone()).or_insert(Session {
+        id: session_id_clone,
         user_id: user_id.clone(),
         resuming: false,
         timeout: 60,
         players: Vec::new(),
     });
 
-    // Handle voice update from REST
-    if let Some(ref voice) = payload.voice {
+    // Build command for this request
+    let cmd = if let Some(ref voice) = payload.voice {
         state.plugin_manager.on_voice_server_update(&guild_id, &voice.endpoint, &voice.token).await;
-        let workers = state.workers.read().await;
-        if let Some(tx) = workers.get(&guild_id) {
-            let _ = tx
-                .send(WorkerCommand::VoiceUpdate {
-                    session_id: voice.session_id.clone(),
-                    user_id: user_id.clone(),
-                    token: voice.token.clone(),
-                    endpoint: voice.endpoint.clone(),
-                })
-                .await;
+        Some(WorkerCommand::VoiceUpdate {
+            session_id: voice.session_id.clone(),
+            user_id: user_id.clone(),
+            token: voice.token.clone(),
+            endpoint: voice.endpoint.clone(),
+        })
+    } else if let Some(ref track_val) = payload.track {
+        if let Some(encoded) = track_val.get("encoded").and_then(|e| e.as_str()) {
+            Some(WorkerCommand::Play {
+                encoded_track: encoded.to_string(),
+                no_replace: false,
+            })
+        } else {
+            None
         }
-    }
+    } else {
+        None
+    };
 
     // Clone track before potential move into session
     let track_for_worker = payload.track.clone();
@@ -905,28 +914,45 @@ async fn patch_player(
         session.players.push(player);
     }
 
-    // Send commands to the worker if it exists
-    let workers = state.workers.read().await;
-    if let Some(tx) = workers.get(&guild_id) {
-        if let Some(ref track_val) = track_for_worker {
-            if let Some(encoded) = track_val.get("encoded").and_then(|e| e.as_str()) {
-                let _ = tx
-                    .send(WorkerCommand::Play {
-                        encoded_track: encoded.to_string(),
-                        no_replace: false,
-                    })
-                    .await;
+    // Ensure worker exists and send command
+    if let Some(cmd) = cmd {
+        let mut workers = state.workers.write().await;
+        if !workers.contains_key(&guild_id) {
+            info!(target: "NodeLink", "Spawning new isolated worker for Guild {}", guild_id);
+            let (tx, rx) = mpsc::channel(100);
+            let ws_senders = state.ws_senders.read().await;
+            let ws_sender = ws_senders.get(&session_id).cloned();
+            let ws_sender_for_event = ws_sender.clone();
+            let worker = PlayerWorker::new(
+                guild_id.clone(),
+                rx,
+                ws_sender,
+                state.sources.clone(),
+                state.player_states.clone(),
+                state.sponsorblock.clone(),
+                state.config.audio.fading.clone(),
+                state.config.track_stuck_threshold_ms,
+                state.config.audio.resampling_quality.clone(),
+                state.config.audio.crossfade.clone(),
+                state.config.audio.loudness_normalizer,
+                state.config.audio.lookahead_ms,
+                state.config.audio.gate_threshold_lufs,
+                state.plugin_manager.clone(),
+            );
+            if let Some(ref ws_sender) = ws_sender_for_event {
+                let _ = ws_sender.try_send(serde_json::json!({
+                    "op": "event",
+                    "type": crate::constants::gateway_events::PLAYER_CREATED,
+                    "guildId": guild_id
+                }));
             }
+            tokio::spawn(async move { worker.run().await });
+            workers.insert(guild_id.clone(), tx);
         }
-        if let Some(paused) = payload.paused {
-            let _ = tx.send(WorkerCommand::Pause(paused)).await;
+        if let Some(tx) = workers.get(&guild_id) {
+            let _ = tx.send(cmd).await;
         }
-        if let Some(volume) = payload.volume {
-            let _ = tx.send(WorkerCommand::Volume(volume as u16)).await;
-        }
-        if let Some(ref filters) = payload.filters {
-            let _ = tx.send(WorkerCommand::Filters(filters.clone())).await;
-        }
+        drop(workers);
     }
 
     let player = session

@@ -720,6 +720,34 @@ impl VoiceConnection {
             };
 
             let (mut write, mut read) = ws_stream.split();
+            let mut session_info: Option<VoiceSessionInfo> = None;
+
+            // Wait for server's OP 8 (Hello) before sending Identify
+            for _ in 0..3 {
+                let msg = match tokio::time::timeout(Duration::from_secs(5), read.next()).await {
+                    Ok(Some(Ok(Message::Text(t)))) => t,
+                    Ok(Some(Ok(Message::Close(c)))) => {
+                        warn!(target: "Voice", "WS closed waiting for Hello: {c:?} (server: {})", server_id);
+                        break;
+                    }
+                    _ => {
+                        warn!(target: "Voice", "WS error waiting for Hello (server: {})", server_id);
+                        break;
+                    }
+                };
+                let p: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+                if p["op"].as_u64() == Some(8) {
+                    heartbeat_interval_ms = p["d"]["heartbeat_interval"].as_u64().unwrap_or(41250);
+                    info!(target: "Voice", "Hello received, heartbeat {}ms (server: {})", heartbeat_interval_ms, server_id);
+                    break;
+                }
+                if p["op"].as_u64() == Some(2) {
+                    // Some servers send Ready (OP 2) directly without Hello
+                    info!(target: "Voice", "Ready received directly (no Hello) (server: {})", server_id);
+                    break;
+                }
+            }
+
             let payload = if first_attempt {
                 json!({
                     "op": 0,
@@ -742,6 +770,9 @@ impl VoiceConnection {
             };
             first_attempt = false;
 
+            info!(target: "Voice", "Sending OP {}: user_id={}, srv={}, sess={} (server: {})",
+                payload["op"], user_id, server_id, session_id, server_id);
+
             if write
                 .send(Message::Text(payload.to_string()))
                 .await
@@ -757,9 +788,6 @@ impl VoiceConnection {
                 continue;
             }
 
-            let mut session_info: Option<VoiceSessionInfo> = None;
-            let ready = false;
-
             // Handshake loop
             loop {
                 let msg = tokio::select! {
@@ -769,7 +797,7 @@ impl VoiceConnection {
                         return;
                     }
                 };
-                let _text = match msg {
+                let text = match msg {
                     Some(Ok(Message::Text(t))) => t,
                     Some(Ok(Message::Close(c))) => {
                         warn!(target: "Voice", "WS closed during handshake: {c:?} (server: {})", server_id);
@@ -777,26 +805,6 @@ impl VoiceConnection {
                     }
                     _ => {
                         warn!(target: "Voice", "WS error during handshake (server: {})", server_id);
-                        break;
-                    }
-                };
-
-                let text = match read.next().await {
-                    Some(Ok(Message::Text(t))) => t,
-                    Some(Ok(Message::Close(c))) => {
-                        warn!(
-                            target: "Voice",
-                            "WS closed during handshake: {c:?} (server: {})",
-                            server_id
-                        );
-                        break;
-                    }
-                    _ => {
-                        warn!(
-                            target: "Voice",
-                            "WS error during handshake (server: {})",
-                            server_id
-                        );
                         break;
                     }
                 };
@@ -987,7 +995,7 @@ impl VoiceConnection {
                 }
             }
 
-            if !ready {
+            if session_info.is_none() {
                 warn!(
                     target: "Voice",
                     "Voice WS handshake incomplete (server: {})",

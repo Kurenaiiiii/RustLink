@@ -458,7 +458,7 @@ impl VoiceConnection {
         let token = self.token.clone();
         let user_id = self.user_id.clone();
         let preferred = self.preferred_mode;
-        let ws_url = format!("wss://{}?v=4", self.endpoint);
+        let ws_url = format!("wss://{}/", self.endpoint);
 
         let event_tx = self.event_tx.clone();
         let conn_state = self.conn_state.clone();
@@ -691,7 +691,7 @@ impl VoiceConnection {
         ping_atomic: Arc<AtomicI64>,
         shutdown_rx: &mut oneshot::Receiver<()>,
     ) {
-        info!(target: "Voice", "Starting voice WS (server: {})", server_id);
+        info!(target: "Voice", "Starting voice WS url={ws_url} (server: {server_id})");
         let max_retries = 5;
         let mut retry_delay = Duration::from_millis(500);
         let mut first_attempt = true;

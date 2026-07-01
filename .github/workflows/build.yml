@@ -1,5 +1,7 @@
 name: Build Linux Binary
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 env:

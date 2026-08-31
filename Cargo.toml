@@ -26,7 +26,7 @@ regex-lite = "0.1"
 symphonia = { version = "0.5.3", features = ["all"] }
 opus = "0.3.0"
 songbird = { version = "0.6", default-features = false, features = ["driver", "rustls", "tungstenite"] }
-tokio-tungstenite = "0.21"
+tokio-tungstenite = { version = "0.21", features = ["rustls-tls-webpki-roots"] }
 xsalsa20poly1305 = "0.9"
 salsa20 = "0.10"
 aes-gcm = "0.10"

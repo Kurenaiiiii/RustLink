@@ -8,6 +8,9 @@ use tracing::warn;
 async fn main() {
     const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+    // --- Self-checks for required runtime dependencies ---
+    check_required_binaries();
+
     let config = config::NodeLinkConfig::load_or_default("rustlink.toml").unwrap_or_default();
 
     logging::init_logging(&config.logging.level);
@@ -47,6 +50,34 @@ async fn main() {
     }
 
     axum::serve(listener, app).await.unwrap();
+}
+
+fn check_required_binaries() {
+    // ffmpeg is required for YouTube SABR (fMP4 dash) decoding
+    // We spawn `ffmpeg -version` and check exit status
+    let ffmpeg_ok = std::process::Command::new("ffmpeg")
+        .arg("-version")
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status()
+        .map(|s| s.success())
+        .unwrap_or(false);
+
+    if !ffmpeg_ok {
+        eprintln!("\x1b[1;41m[REQUIRED] ffmpeg not found in PATH! \x1b[0m");
+        eprintln!("RustLink requires ffmpeg for YouTube SABR (fMP4) decoding.");
+        eprintln!("Install it and ensure 'ffmpeg -version' works:");
+        eprintln!("  Debian/Ubuntu: apt update && apt install -y ffmpeg");
+        eprintln!("  Arch:          pacman -S ffmpeg");
+        eprintln!("  macOS:         brew install ffmpeg");
+        eprintln!("  Windows:       winget install ffmpeg  (or choco install ffmpeg)");
+        eprintln!("  Docker:        docker run ...  (ffmpeg is baked into the RustLink image)");
+        eprintln!("\nRefusing to start without ffmpeg (would be silent playback).");
+        std::process::exit(1);
+    }
+
+    // Optional: check for opusenc / yt-dlp etc. if you add them later
+    tracing::info!(target: "SelfCheck", "All required binaries present: ffmpeg OK");
 }
 
 async fn broadcast_stats(state: &SharedState) {

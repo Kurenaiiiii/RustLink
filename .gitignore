@@ -1,0 +1,12 @@
+/target/
+/test-bot/
+/.idea/
+/.vscode/
+/graphify-out/
+*.pdb
+*.profraw
+*.profdata
+*.log
+
+# Local runtime config/secrets.
+/rustlink.local.*

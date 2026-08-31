@@ -1,0 +1,630 @@
+# =============================================================================
+# RustLink Configuration File (rustlink.toml)
+# Converted from NodeLink config.js
+# =============================================================================
+# =============================================================================
+# Global Settings
+# =============================================================================
+default_search_source = ["youtube", "soundcloud"]
+unified_search_sources = ["youtube", "soundcloud"]
+max_search_results = 10
+max_album_playlist_length = 100
+player_update_interval = 2000
+stats_update_interval_ms = 30000
+track_stuck_threshold_ms = 10000
+event_timeout_ms = 15000
+zombie_threshold_ms = 60000
+enable_holo_tracks = false
+enable_track_stream_endpoint = false
+enable_load_stream_endpoint = false
+resolve_external_links = false
+fetch_channel_info = false
+
+[server]
+host = "0.0.0.0"
+port = 8211
+password = "youdontevenknowmebitch"
+max_body_size = 10485760
+
+
+# =============================================================================
+# [logging]
+# =============================================================================
+[logging]
+level = "debug"
+
+[logging.file]
+enabled = false
+path = "logs"
+rotation = "daily"
+ttl_days = 7
+
+[logging.debug]
+all       = true
+request   = true
+session   = true
+player    = true
+filters   = true
+sources   = true
+lyrics    = true
+youtube   = true
+"youtube-cipher" = true
+sabr      = true
+potoken   = true
+
+
+# =============================================================================
+# [connection]
+# =============================================================================
+[connection]
+log_all_checks = false
+interval = 300000
+timeout = 10000
+
+[connection.thresholds]
+bad     = 1
+average = 5
+
+
+# =============================================================================
+# [metrics]
+# =============================================================================
+[metrics]
+enabled = true
+interval = 5000
+username = "admin"
+password = ""
+
+[metrics.authorization]
+type = "Bearer"
+username = "admin"
+password = ""
+
+
+# =============================================================================
+# [rate_limit]
+# =============================================================================
+[rate_limit]
+enabled = true
+max_requests = 300
+window_ms = 60000
+ignore_paths = []
+
+[rate_limit.global]
+max_requests = 1000
+time_window_ms = 60000
+
+[rate_limit.perIp]
+max_requests = 100
+time_window_ms = 10000
+
+[rate_limit.perUserId]
+max_requests = 50
+time_window_ms = 5000
+
+[rate_limit.perGuildId]
+max_requests = 20
+time_window_ms = 5000
+
+[rate_limit.ignore]
+user_ids = []
+guild_ids = []
+ips = []
+
+
+# =============================================================================
+# [dos_protection]
+# =============================================================================
+[dos_protection]
+enabled = true
+max_body_size = 10485760
+max_requests_per_second = 50
+delay_ms = 0
+
+[dos_protection.thresholds]
+burst_requests = 50
+time_window_ms = 10000
+
+[dos_protection.mitigation]
+delay_ms = 500
+block_duration_ms = 300000
+
+[dos_protection.ignore]
+user_ids = []
+guild_ids = []
+ips = []
+
+
+# =============================================================================
+# [audio]
+# =============================================================================
+[audio]
+quality = "high"
+encryption = "aead_aes256_gcm_rtpsize"
+resampling_quality = "best"
+loudness_normalizer = false
+lookahead_ms = 5
+gate_threshold_lufs = -60.0
+
+[audio.fading]
+enabled = false
+
+[audio.fading.track_start]
+duration = 0
+curve = "linear"
+type = "volume"
+
+[audio.fading.track_end]
+duration = 0
+curve = "linear"
+type = "volume"
+
+[audio.fading.track_stop]
+duration = 0
+curve = "linear"
+type = "volume"
+
+[audio.fading.seek]
+duration = 0
+curve = "linear"
+type = "volume"
+
+[audio.fading.pause]
+duration = 0
+curve = "sinusoidal"
+type = "tape"
+
+[audio.fading.resume]
+duration = 0
+curve = "sinusoidal"
+type = "tape"
+
+[audio.fading.ducking]
+enabled = false
+duration = 0
+target_volume = 0.3
+curve = "linear"
+
+[audio.crossfade]
+enabled = false
+duration = 0
+curve = "sinusoidal"
+mode = "preload"
+min_buffer_ms = 250
+buffer_ms = 0
+
+
+# =============================================================================
+# [filters]
+# =============================================================================
+[filters]
+
+[filters.enabled]
+tremolo      = true
+vibrato      = true
+lowpass      = true
+highpass     = true
+rotation     = true
+karaoke      = true
+distortion   = true
+channel_mix  = true
+equalizer    = true
+chorus       = true
+compressor   = true
+echo         = true
+phaser       = true
+timescale    = true
+
+
+# =============================================================================
+# [sponsorblock]
+# =============================================================================
+[sponsorblock]
+enabled = false
+api = "https://sponsor.ajay.app"
+categories = [
+    "sponsor", "selfpromo", "interaction", "intro",
+    "outro", "preview", "music_offtopic", "filler",
+]
+action_types = ["skip"]
+skip_margin_ms = 150
+
+
+# =============================================================================
+# [lyrics]
+# =============================================================================
+[lyrics]
+fallback_source = "genius"
+
+[lyrics.youtube]
+enabled = true
+[lyrics.genius]
+enabled = true
+[lyrics.musixmatch]
+enabled = true
+[lyrics.deezer]
+enabled = true
+[lyrics.lrclib]
+enabled = true
+[lyrics.letrasmus]
+enabled = true
+[lyrics.bilibili]
+enabled = true
+[lyrics.yandexmusic]
+enabled = true
+[lyrics.monochrome]
+enabled = true
+
+
+# =============================================================================
+# [meanings]
+# =============================================================================
+[meanings.letrasmus]
+enabled = true
+[meanings.wikipedia]
+enabled = true
+
+
+# =============================================================================
+# [plugins]
+# =============================================================================
+[plugins]
+enabled = false
+paths = []
+definitions = []
+
+
+# =============================================================================
+# [voiceReceive]
+# =============================================================================
+[voiceReceive]
+enabled = true
+format = "pcm_s16le"
+
+
+# =============================================================================
+# [routePlanner]
+# =============================================================================
+[routePlanner]
+strategy = "RotateOnBan"
+bannedIpCooldown = 600000
+ipBlocks = []
+
+
+# =============================================================================
+# [mix]
+# =============================================================================
+[mix]
+enabled = true
+defaultVolume = 0.8
+maxLayersMix = 15
+autoCleanup = true
+
+
+# =============================================================================
+# [cluster]
+# =============================================================================
+[cluster]
+enabled = false
+workers = 0
+min_workers = 1
+command_timeout = 6000
+fast_command_timeout = 4000
+max_retries = 2
+process_mode = "in-process"
+
+[cluster.runtime]
+workerMaxOldSpaceMb = 0
+workerExposeGc = false
+workerExecArgv = []
+sourceWorkerMaxOldSpaceMb = 0
+sourceWorkerExposeGc = false
+sourceWorkerExecArgv = []
+
+[cluster.specialized_source_worker]
+enabled = true
+count = 2
+micro_workers = 4
+tasks_per_worker = 32
+silent_logs = true
+
+[cluster.hibernation]
+enabled = true
+timeoutMs = 1200000
+
+[cluster.scaling]
+maxPlayersPerWorker = 50
+targetUtilization = 0.7
+scaleUpThreshold = 0.75
+scaleDownThreshold = 0.3
+checkIntervalMs = 5000
+idleWorkerTimeoutMs = 60000
+queueLengthScaleUpFactor = 5
+lagPenaltyLimit = 60
+cpuPenaltyLimit = 0.85
+
+[cluster.endpoint]
+patch_enabled = true
+allow_external_patch = false
+code = "CAPYBARA"
+
+
+# =============================================================================
+# [sources]
+# =============================================================================
+[sources.http]
+enabled = true
+
+[sources.local]
+enabled = true
+base_path = "./local-music"
+
+[sources."google-tts"]
+enabled = true
+language = "en-US"
+
+[sources.youtube]
+enabled = true
+allow_itag = [251, 140]
+get_oauth_token = false
+refresh_tokens = []
+hl = "en"
+gl = "US"
+fallback_sources = [
+    "soundcloud", "deezer", "jiosaavn", "qobuz", "gaana",
+    "vkmusic", "yandexmusic", "audiomack", "bandcamp",
+    "audius", "mixcloud", "bilibili", "bluesky", "nicovideo",
+]
+proxies = []
+
+[sources.youtube.clients]
+search    = ["Android"]
+playback  = ["AndroidVR", "TV", "TVCast", "WebEmbedded", "WebParentTools", "Web", "IOS"]
+resolve   = ["AndroidVR", "TV", "TVCast", "WebEmbedded", "WebParentTools", "IOS", "Web"]
+
+[sources.youtube.clients.settings]
+TV = { refreshToken = [""] }
+
+[sources.youtube.cipher]
+url = "https://cipher.kikkia.dev/api"
+
+[sources.spotify]
+enabled = true
+client_id = "e16cffd061d64c128aad7a67e066797a"
+client_secret = "4319f0e3804e4e53aad18503b76dbd31"
+external_auth_url = "http://get.1lucas1apk.fun/spotify/gettoken"
+market = "US"
+playlist_load_limit = 0
+album_load_limit = 0
+allowExplicit = true
+allow_local_files = true
+sp_dc = ""
+playlistPageLoadConcurrency = 20
+albumPageLoadConcurrency = 20
+
+[sources.soundcloud]
+enabled = true
+
+[sources.applemusic]
+enabled = true
+mediaApiToken = "token_here"
+market = "US"
+playlistLoadLimit = 0
+albumLoadLimit = 0
+playlistPageLoadConcurrency = 20
+albumPageLoadConcurrency = 20
+allowExplicit = true
+
+[sources.deezer]
+enabled = true
+
+[sources.jiosaavn]
+enabled = true
+playlistLoadLimit = 50
+artistLoadLimit = 20
+proxy.url = ""
+
+[sources.yandexmusic]
+enabled = true
+artist_load_limit = 1
+album_load_limit = 1
+playlist_load_limit = 1
+allow_unavailable = false
+allow_explicit = true
+proxy.url = ""
+
+[sources.qobuz]
+enabled = true
+user_token = ""
+formatId = "27"
+allowExplicit = true
+
+[sources.bandcamp]
+enabled = true
+
+[sources.audius]
+enabled = true
+appName = ""
+apiKey = ""
+apiSecret = ""
+playlistLoadLimit = 100
+albumLoadLimit = 100
+
+[sources.audiomack]
+enabled = true
+
+[sources.mixcloud]
+enabled = true
+
+[sources.vimeo]
+enabled = true
+
+[sources.twitch]
+enabled = true
+
+[sources.reddit]
+enabled = true
+
+[sources.tumblr]
+enabled = true
+
+[sources.twitter]
+enabled = true
+
+[sources.bilibili]
+enabled = true
+
+[sources.nicovideo]
+enabled = true
+
+[sources.telegram]
+enabled = true
+
+[sources.googledrive]
+enabled = true
+
+[sources.instagram]
+enabled = true
+
+[sources.amazonmusic]
+enabled = true
+
+[sources.gaana]
+enabled = true
+streamQuality = "high"
+playlistLoadLimit = 100
+albumLoadLimit = 100
+artistLoadLimit = 100
+proxy.url = ""
+
+[sources.pandora]
+enabled = false
+remote_token_url = "https://get.1lucas1apk.fun/pandora/gettoken"
+
+[sources.vkmusic]
+enabled = true
+user_token = ""
+user_cookie = ""
+proxy.url = ""
+
+[sources.eternalbox]
+enabled = true
+base_url = "https://eternalboxmirror.xyz"
+search_results = 30
+enrichSpotify = true
+includeAnalysis = true
+includeAnalysisSummary = true
+eternalStream = true
+cacheMaxBytes = 20971520
+maxBranches = 4
+maxBranchThreshold = 75
+branchThresholdStart = 10
+branchThresholdStep = 5
+branchTargetDivisor = 6
+addLastEdge = true
+justBackwards = false
+justLongBranches = false
+removeSequentialBranches = true
+useFilteredSegments = true
+minRandomBranchChance = 0.18
+maxRandomBranchChance = 0.5
+randomBranchChanceDelta = 0.09
+timbreWeight = 1
+pitchWeight = 10
+loudStartWeight = 1
+loudMaxWeight = 1
+durationWeight = 100
+confidenceWeight = 1
+infiniteStream = true
+max_reconnects = 0
+reconnectDelayMs = 1000
+
+[sources.bluesky]
+enabled = true
+
+[sources.anghami]
+enabled = false
+
+[sources.rss]
+enabled = true
+
+[sources.songlink]
+enabled = true
+apiKey = ""
+userCountry = "US"
+songIfSingle = true
+useApi = true
+useScrapeFallback = true
+preferredPlatforms = [
+    "spotify", "appleMusic", "youtubeMusic", "youtube",
+    "deezer", "tidal", "amazonMusic", "soundcloud",
+    "bandcamp", "audius", "audiomack", "itunes", "amazonStore",
+]
+fallbackToAny = true
+
+[sources.iheartradio]
+enabled = true
+
+[sources.shazam]
+enabled = true
+allowExplicit = true
+
+[sources.genius]
+enabled = true
+
+[sources.pinterest]
+enabled = true
+
+[sources.kwai]
+enabled = true
+
+[sources.flowery]
+enabled = true
+voice = "Salli"
+translate = false
+silence = 0
+speed = 1.0
+enforceConfig = false
+
+[sources.lazypytts]
+enabled = true
+service = "Cerence"
+voice = "Luciana"
+maxTextLength = 3000
+enforceConfig = false
+
+[sources.pipertts]
+enabled = false
+url = "http://localhost:5000"
+
+[sources.tidal]
+enabled = true
+token = "token_here"
+countryCode = "US"
+playlistLoadLimit = 0
+playlistPageLoadConcurrency = 20
+hifiApis = [""]
+hifiQualities = ["HI_RES_LOSSLESS", "LOSSLESS", "HIGH", "LOW"]
+
+[sources.lastfm]
+enabled = true
+apiKey = ""
+
+[sources.netease]
+enabled = true
+
+[sources.letrasmus]
+enabled = true
+
+[sources.monochrome]
+enabled = true
+instances = []
+streamingInstances = []
+quality = "HI_RES_LOSSLESS"
+
+
+# =============================================================================
+# [pluginConfig]
+# =============================================================================
+pluginConfig = {}
+
